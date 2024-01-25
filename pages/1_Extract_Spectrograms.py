@@ -4,6 +4,9 @@ from audio_sample_generator.utils.audio_utils import load, \
                                                      pad_duration
 
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
+from audio_sample_generator.utils.streamlit_utils import sample_data_list
+
+from audio_sample_generator.data.sample_data import SampleData
 
 import streamlit as st
 
@@ -282,12 +285,36 @@ if input_audio_files is not None \
 
             mel_spectrogram: torch.Tensor = transform_mel_spectrogram(waveform_padded)
 
-            mel_spectrogram_image = convert_mel_spectrogram_to_image(mel_spectrogram)
+            sample_data = SampleData(
+                input_audio_file_name=input_audio_file.name,
+                sample_rate=resample_rate,
+                duration=target_duration,
+                n_fft=n_fft,
+                win_length=win_length,
+                hop_length=hop_length,
+                f_min=f_min,
+                f_max=f_max,
+                pad=pad,
+                n_mels=n_mels,
+                window_fn_key=window_fn_key,
+                power=power,
+                normalized=normalized,
+                norm=norm,
+                mel_scale=mel_scale,
+                center=center,
+                pad_mode=pad_mode,
+                waveform=waveform_padded,
+                mel_spectrogram=mel_spectrogram,
+            )
+
+            sample_data_list.append(sample_data)
 
             st.audio(
-                data=waveform_padded.numpy(),
-                sample_rate=resample_rate,
+                data=sample_data.waveform.numpy(),
+                sample_rate=sample_data.sample_rate,
             )
+
+            mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
 
             st.image(
                 image=mel_spectrogram_image,
