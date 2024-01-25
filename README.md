@@ -2,12 +2,14 @@
 
 ## TODO
 
-- [ ] Load multiple audio samples.
-- [ ] Convert to mono.
-- [ ] Convert sampling rate to 22050.
-- [ ] Trim leading silence.
-- [ ] Pad right to match total duration to certain duration.
-- [ ] Add batch convert to mel spectrograms.
+- [x] Load multiple audio samples.
+- [x] Convert to mono.
+- [x] Convert sampling rate to 22050.
+- [x] Trim leading silence.
+- [x] Trim to certain duration.
+- [x] Pad right to match total duration to certain duration.
+- [x] Add batch convert to mel spectrograms.
+- [ ] Add saving convert settings for reversing spectrogram.
 - [ ] Add loading of mel spectrograms as dataset.
 - [ ] Add training of generative neural network with mel spectrograms dataset.
 - [ ] Add usage of neural network for generating random mel spectrograms.

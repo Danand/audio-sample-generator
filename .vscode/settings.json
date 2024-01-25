@@ -1,5 +1,16 @@
 {
   "cSpell.words": [
-    "streamlit"
+    "astype",
+    "blackman",
+    "fromarray",
+    "hann",
+    "keepdim",
+    "mels",
+    "rolloff",
+    "selectbox",
+    "slaney",
+    "streamlit",
+    "torchaudio",
+    "unsqueeze"
   ]
 }
