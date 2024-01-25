@@ -6,6 +6,7 @@
     "hann",
     "keepdim",
     "mels",
+    "ndarray",
     "rolloff",
     "selectbox",
     "slaney",

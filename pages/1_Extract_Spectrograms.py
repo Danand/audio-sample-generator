@@ -1,75 +1,18 @@
-import streamlit as st
+from audio_sample_generator.utils.audio_utils import load, \
+                                                     trim_silence, \
+                                                     trim_duration, \
+                                                     pad_duration
 
-import numpy as np
+from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
+
+import streamlit as st
 
 import torch
 import torchaudio
 
-from torchaudio._backend.utils import get_load_func
-
-# HACK: Fix linting failure on `torchaudio.load()`
-load = get_load_func()
-
 from torchaudio.functional import resample
 
-from PIL import Image
-
 from typing import cast
-
-def trim_silence(waveform: torch.Tensor, threshold: float) -> torch.Tensor:
-    channel = waveform[0]
-
-    first_index = 0
-
-    for index, value in enumerate(channel):
-        if value <= threshold:
-            first_index = index
-        else:
-            break
-
-    waveform_trimmed = torch.unsqueeze(channel[first_index:], 0)
-
-    return waveform_trimmed
-
-def trim_duration(
-    waveform: torch.Tensor,
-    duration: float,
-    sample_rate: int,
-) -> torch.Tensor:
-    last_index = int(sample_rate * duration)
-
-    sample_length = waveform.size(1)
-
-    if sample_length <= last_index:
-        return waveform
-
-    channel = waveform[0]
-
-    waveform_trimmed = torch.unsqueeze(channel[:last_index], 0)
-
-    return waveform_trimmed
-
-def pad_duration(
-    waveform: torch.Tensor,
-    duration: float,
-    sample_rate: int,
-) -> torch.Tensor:
-    last_index = int(sample_rate * duration)
-
-    sample_length = waveform.size(1)
-
-    pad_size = last_index - sample_length
-
-    if pad_size <= 0:
-        return waveform
-
-    waveform_padded = torch.nn.functional.pad(
-        input=waveform,
-        pad=(0, pad_size),
-        value=0,
-    )
-
-    return waveform_padded
 
 title = "Extract Spectrograms"
 
@@ -319,11 +262,6 @@ if input_audio_files is not None \
                 sample_rate=resample_rate,
             )
 
-            st.audio(
-                data=waveform_padded.numpy(),
-                sample_rate=resample_rate,
-            )
-
             transform_mel_spectrogram = torchaudio.transforms.MelSpectrogram(
                 sample_rate=resample_rate,
                 n_fft=n_fft,
@@ -344,14 +282,12 @@ if input_audio_files is not None \
 
             mel_spectrogram: torch.Tensor = transform_mel_spectrogram(waveform_padded)
 
-            mel_spectrogram_image_data = (mel_spectrogram).squeeze(0) \
-                                                          .numpy() \
-                                                          .astype(np.float32)
+            mel_spectrogram_image = convert_mel_spectrogram_to_image(mel_spectrogram)
 
-            mel_spectrogram_image = Image.fromarray(
-                obj=mel_spectrogram_image_data,
-                mode="F",
-            ).convert("RGB")
+            st.audio(
+                data=waveform_padded.numpy(),
+                sample_rate=resample_rate,
+            )
 
             st.image(
                 image=mel_spectrogram_image,
