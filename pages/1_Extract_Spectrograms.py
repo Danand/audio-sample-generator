@@ -16,6 +16,7 @@ import torchaudio
 from torchaudio.functional import resample
 
 from typing import cast
+from uuid import uuid4
 
 title = "Extract Spectrograms"
 
@@ -296,6 +297,7 @@ if input_audio_files is not None \
                 mel_spectrogram: torch.Tensor = transform_mel_spectrogram(waveform_padded)
 
                 sample_data = SampleData(
+                    id=str(uuid4()),
                     input_audio_file_name=input_audio_file.name,
                     sample_rate=resample_rate,
                     duration=target_duration,

@@ -4,6 +4,7 @@ from torch import Tensor
 
 @dataclass
 class SampleData:
+    id: str
     input_audio_file_name: str
     sample_rate: int
     duration: float
@@ -23,4 +24,8 @@ class SampleData:
     pad_mode: str
     waveform: Tensor
     mel_spectrogram: Tensor
+    is_enabled_for_training = True
+    caption: str | None = None
+    subject: str | None = None
+    weight: float = 1.0
 
