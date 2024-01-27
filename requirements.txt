@@ -1,3 +1,4 @@
 streamlit==1.30.0
 torchaudio==2.1.2
+torchvision==0.16.2
 pillow==10.2.0

@@ -7,11 +7,14 @@
     "keepdim",
     "mels",
     "ndarray",
+    "optim",
+    "relu",
     "rolloff",
     "selectbox",
     "slaney",
     "streamlit",
     "torchaudio",
+    "torchvision",
     "unsqueeze"
   ]
 }
