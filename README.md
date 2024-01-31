@@ -11,6 +11,7 @@
 - [x] Add batch convert to mel spectrograms.
 - [x] Add saving convert settings for reversing spectrogram.
 - [x] Add loading of mel spectrograms as dataset.
-- [ ] Add training of generative neural network with mel spectrograms dataset.
+- [x] Add training of generative neural network with mel spectrograms dataset.
+- [x] Add audio preview for input spectrograms.
 - [ ] Add usage of neural network for generating random mel spectrograms.
 - [ ] Convert generated mel spectrogram back to audio.

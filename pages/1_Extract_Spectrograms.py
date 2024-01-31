@@ -332,6 +332,11 @@ if input_audio_files is not None \
                     mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
 
                     st.image(
-                        image=mel_spectrogram_image,
+                        image=mel_spectrogram_image.convert("RGB"),
                         output_format="PNG",
+                        use_column_width="always",
                     )
+
+                    st.text(f"width: {mel_spectrogram_image.width}")
+                    st.text(f"height: {mel_spectrogram_image.height}")
+
