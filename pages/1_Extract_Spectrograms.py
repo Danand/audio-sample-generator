@@ -65,15 +65,58 @@ if input_audio_files is not None \
             )
         )
 
+        default_target_duration = st.session_state.get("default_target_duration", 1.0)
+
         target_duration = cast(
             float,
             st.number_input(
                 label="Target Duration",
                 min_value=0.01,
                 max_value=10.0,
-                value=1.0,
+                value=default_target_duration,
+                format="%.5f",
             )
         )
+
+        default_n_mels = st.session_state.get("default_n_mels", 128)
+        default_hop_length = st.session_state.get("default_hop_length", 400)
+        default_custom_value_enabled_hop_length=st.session_state.get("default_custom_value_enabled_hop_length", False)
+
+        with st.container(border=True):
+            target_width = cast(
+                int,
+                st.number_input(
+                    label="Target Width",
+                    value=512,
+                    step=1,
+                )
+            )
+
+            target_height = cast(
+                int,
+                st.number_input(
+                    label="Target Height",
+                    value=512,
+                    step=1,
+                )
+            )
+
+            if st.button("Fit"):
+                default_custom_value_enabled_hop_length=True
+
+                default_n_mels = target_height
+                default_hop_length = int((resample_rate * target_duration) / target_width)
+
+                total_samples_corrected = target_width * float(default_hop_length)
+
+                target_duration = round(total_samples_corrected / resample_rate, 3)
+
+                st.text(f"Duration corrected to {target_duration} for fitting target width of {target_width}")
+
+                st.session_state["default_target_duration"] = target_duration
+                st.session_state["default_n_mels"] = default_n_mels
+                st.session_state["default_hop_length"] = default_hop_length
+                st.session_state["default_custom_value_enabled_hop_length"] = default_custom_value_enabled_hop_length
 
         n_fft = cast(
             int,
@@ -104,7 +147,7 @@ if input_audio_files is not None \
 
         custom_value_enabled_hop_length = st.checkbox(
             label="Custom Hop Length",
-            value=False,
+            value=default_custom_value_enabled_hop_length,
         )
 
         hop_length = cast(
@@ -112,7 +155,7 @@ if input_audio_files is not None \
             st.number_input(
                 label="Hop Length",
                 min_value=0,
-                value=400,
+                value=default_hop_length,
                 disabled=not custom_value_enabled_hop_length,
             )
         )
@@ -162,7 +205,7 @@ if input_audio_files is not None \
             st.number_input(
                 label="Mel filter banks number",
                 min_value=0,
-                value=128,
+                value=default_n_mels,
             )
         )
 
