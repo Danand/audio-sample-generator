@@ -288,7 +288,14 @@ if input_audio_files is not None \
             st.subheader("Loaded Audio")
 
             for input_audio_file in input_audio_files:
-                waveform_orig, sample_rate = load(input_audio_file)
+                try:
+                    waveform_orig, sample_rate = load(input_audio_file)
+                except Exception as exception:
+                    with st.container(border=True):
+                        st.markdown(f"Error occurred on loading of `{input_audio_file.name}`:")
+                        st.error(exception)
+
+                    continue
 
                 waveform_resampled = resample(
                     waveform=waveform_orig,
