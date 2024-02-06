@@ -14,5 +14,7 @@
 - [x] Add training of generative neural network with mel spectrograms dataset.
 - [x] Add audio preview for input spectrograms.
 - [x] Add batch converter for uploaded spectrograms.
+- [ ] Add choice of folder layout for dataset.
+- [ ] Refactor sample data.
 - [ ] Add usage of neural network for generating random mel spectrograms.
 - [ ] Convert generated mel spectrogram back to audio.

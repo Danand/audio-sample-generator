@@ -4,6 +4,7 @@ from audio_sample_generator.utils.streamlit_utils import sample_data_list
 from audio_sample_generator.utils.torch_utils import get_available_devices
 from audio_sample_generator.nn.spectrograms_generator_model import SpectrogramsGeneratorModel
 from audio_sample_generator.data.model_data import ModelData
+from audio_sample_generator.constants import DATASET_ROOT_DIR
 
 import torch
 
@@ -41,43 +42,14 @@ else:
     with st.container(border=True):
         st.subheader("Train Spectrograms Model")
 
-        dataset_root_dir = "./temp/dataset"
-
-        rmtree(
-            path=dataset_root_dir,
-            ignore_errors=True,
-        )
-
         # TODO: Refactor by introducing common storage
         # TODO: for width and height of all images.
-        input_size = 0
-        output_height = 0
-        output_width = 0
 
-        for sample_data in sample_data_list:
-            mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
+        mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data_list[0].mel_spectrogram)
 
-            class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
-
-            class_dir = f"{dataset_root_dir}/{class_name}"
-
-            makedirs(
-                name=class_dir,
-                exist_ok=True,
-            )
-
-            mel_spectrogram_image_path = f"{class_dir}/{sample_data.id}.png"
-            mel_spectrogram_image.save(mel_spectrogram_image_path)
-
-            st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
-
-            input_size = max(
-                input_size,
-                mel_spectrogram_image.height * mel_spectrogram_image.width,
-            )
-
-            output_height = mel_spectrogram_image.height
-            output_width = mel_spectrogram_image.width
+        output_height = mel_spectrogram_image.height
+        output_width = mel_spectrogram_image.width
+        input_size = output_width * output_height
 
         devices = get_available_devices()
 
@@ -198,7 +170,7 @@ else:
             ])
 
             train_dataset = datasets.ImageFolder(
-                root=dataset_root_dir,
+                root=DATASET_ROOT_DIR,
                 transform=transform,
                 loader=load_image,
             )

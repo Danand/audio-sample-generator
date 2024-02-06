@@ -1,9 +1,12 @@
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
 from audio_sample_generator.utils.streamlit_utils import sample_data_list
+from audio_sample_generator.constants import DATASET_ROOT_DIR
 
 import streamlit as st
 
 from typing import cast
+from os import makedirs
+from shutil import rmtree
 
 title = "Prepare Dataset"
 
@@ -74,3 +77,33 @@ else:
 
                 sample_data.weight = weight
 
+    if st.button(
+        label="Save",
+        use_container_width=True,
+        type="primary",
+    ):
+        with st.container(border=True):
+            st.subheader("Saved Images Logs")
+
+            for sample_data in sample_data_list:
+                rmtree(
+                    path=DATASET_ROOT_DIR,
+                    ignore_errors=True,
+                )
+
+                class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
+
+                class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
+
+                makedirs(
+                    name=class_dir,
+                    exist_ok=True,
+                )
+
+                mel_spectrogram_image_path = f"{class_dir}/{sample_data.id}.png"
+
+                mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
+
+                mel_spectrogram_image.save(mel_spectrogram_image_path)
+
+                st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
