@@ -284,6 +284,24 @@ if input_audio_files is not None \
         use_container_width=True,
         type="primary",
     ):
+        transform_mel_spectrogram = torchaudio.transforms.MelSpectrogram(
+            sample_rate=resample_rate,
+            n_fft=n_fft,
+            win_length=win_length,
+            hop_length=hop_length,
+            f_min=f_min,
+            f_max=f_max,
+            pad=pad,
+            n_mels=n_mels,
+            window_fn=window_fn,
+            power=power,
+            normalized=normalized,
+            norm=norm,
+            mel_scale=mel_scale,
+            center=center,
+            pad_mode=pad_mode,
+        )
+
         with st.container(border=True):
             st.subheader("Loaded Audio")
 
@@ -324,24 +342,6 @@ if input_audio_files is not None \
                     waveform=waveform_trimmed_duration,
                     duration=target_duration,
                     sample_rate=resample_rate,
-                )
-
-                transform_mel_spectrogram = torchaudio.transforms.MelSpectrogram(
-                    sample_rate=resample_rate,
-                    n_fft=n_fft,
-                    win_length=win_length,
-                    hop_length=hop_length,
-                    f_min=f_min,
-                    f_max=f_max,
-                    pad=pad,
-                    n_mels=n_mels,
-                    window_fn=window_fn,
-                    power=power,
-                    normalized=normalized,
-                    norm=norm,
-                    mel_scale=mel_scale,
-                    center=center,
-                    pad_mode=pad_mode,
                 )
 
                 mel_spectrogram: torch.Tensor = transform_mel_spectrogram(waveform_padded)
