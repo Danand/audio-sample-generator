@@ -1,7 +1,7 @@
 import torch
 
 from platform import system
-from typing import List
+from typing import Callable, List, Dict
 
 def get_available_devices() -> List[str]:
     devices = [
@@ -19,3 +19,13 @@ def get_available_devices() -> List[str]:
         devices.insert(0, "mps")
 
     return devices
+
+def get_window_fn_dict() -> Dict[str, Callable]:
+    return {
+        "hann": torch.hann_window,
+        "hamming": torch.hamming_window,
+        "blackman": torch.blackman_window,
+        "kaiser": torch.kaiser_window,
+        "bartlett": torch.bartlett_window,
+    }
+
