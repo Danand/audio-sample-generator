@@ -1,3 +1,4 @@
+from audio_sample_generator.data.sample_data import SampleData
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
 from audio_sample_generator.utils.streamlit_utils import sample_data_list
 from audio_sample_generator.constants import DATASET_ROOT_DIR
@@ -7,6 +8,53 @@ import streamlit as st
 from typing import cast
 from os import makedirs
 from shutil import rmtree
+
+class DatasetFolderSaver:
+    KEY_PLAIN_PYTORCH = "Plain PyTorch"
+    KEY_KOHYA_SS = "kohya_ss"
+
+    OPTIONS = [
+        KEY_PLAIN_PYTORCH,
+        KEY_KOHYA_SS,
+    ]
+
+    def save(self, sample_data: SampleData) -> None:
+        raise NotImplementedError(f"Function `save` is not defined at `{self.__class__.__name__}`")
+
+class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
+    def save(self, sample_data: SampleData) -> None:
+        rmtree(
+            path=DATASET_ROOT_DIR,
+            ignore_errors=True,
+        )
+
+        class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
+
+        class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
+
+        makedirs(
+            name=class_dir,
+            exist_ok=True,
+        )
+
+        mel_spectrogram_image_path = f"{class_dir}/{sample_data.id}.png"
+
+        mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
+
+        mel_spectrogram_image.save(mel_spectrogram_image_path)
+
+        st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
+
+class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
+    pass
+
+class DatasetFolderSaverFactory:
+    @classmethod
+    def create(cls, key: str) -> DatasetFolderSaver:
+        return {
+            DatasetFolderSaver.KEY_PLAIN_PYTORCH: lambda: DatasetFolderSaverPlainPyTorch(),
+            DatasetFolderSaver.KEY_KOHYA_SS: lambda: DatasetFolderSaverKohyaSS(),
+        }[key]()
 
 title = "Prepare Dataset"
 
@@ -19,6 +67,22 @@ st.title(title)
 if (len(sample_data_list) == 0):
     st.markdown("No samples here yet. But you can add at **Extract Spectrograms**.")
 else:
+    with st.container(border=True):
+        st.subheader("Common Settings")
+
+        dataset_folders_layout = cast(
+            str,
+            st.selectbox(
+                label="Dataset Folders Layout",
+                options=DatasetFolderSaver.OPTIONS,
+                index=0,
+            )
+        )
+
+    dataset_folder_saver = DatasetFolderSaverFactory.create(
+        key=dataset_folders_layout,
+    )
+
     with st.container(border=True):
         st.subheader("Loaded Audio")
 
@@ -49,7 +113,7 @@ else:
 
                 subject = st.text_input(
                     label="Subject",
-                    placeholder="drum kit",
+                    placeholder="DrumKit",
                     value=None,
                     key=f"subject_{sample_data.id}"
                 )
@@ -86,24 +150,4 @@ else:
             st.subheader("Saved Images Logs")
 
             for sample_data in sample_data_list:
-                rmtree(
-                    path=DATASET_ROOT_DIR,
-                    ignore_errors=True,
-                )
-
-                class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
-
-                class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
-
-                makedirs(
-                    name=class_dir,
-                    exist_ok=True,
-                )
-
-                mel_spectrogram_image_path = f"{class_dir}/{sample_data.id}.png"
-
-                mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
-
-                mel_spectrogram_image.save(mel_spectrogram_image_path)
-
-                st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
+                dataset_folder_saver.save(sample_data)
