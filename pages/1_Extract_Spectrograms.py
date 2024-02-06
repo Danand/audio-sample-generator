@@ -5,6 +5,7 @@ from audio_sample_generator.utils.audio_utils import load, \
 
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
 from audio_sample_generator.utils.streamlit_utils import sample_data_list
+from audio_sample_generator.utils.torch_utils import get_window_fn_dict
 
 from audio_sample_generator.data.sample_data import SampleData
 
@@ -209,13 +210,7 @@ if input_audio_files is not None \
             )
         )
 
-        window_fn_dict = {
-            "hann": torch.hann_window,
-            "hamming": torch.hamming_window,
-            "blackman": torch.blackman_window,
-            "kaiser": torch.kaiser_window,
-            "bartlett": torch.bartlett_window,
-        }
+        window_fn_dict = get_window_fn_dict()
 
         window_fn_key = cast(
             str,
