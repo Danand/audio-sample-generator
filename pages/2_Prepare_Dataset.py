@@ -5,9 +5,10 @@ from audio_sample_generator.constants import DATASET_ROOT_DIR
 
 import streamlit as st
 
-from typing import List, cast
+from typing import Dict, List, cast
 from os import makedirs
 from shutil import rmtree
+from math import floor, gcd
 
 class DatasetFolderSaver:
     KEY_PLAIN_PYTORCH = "Plain PyTorch"
@@ -32,7 +33,10 @@ class DatasetFolderSaver:
     def subjects(self) -> List[str]:
         return self.subjects_collected
 
-    def save(self, sample_data: SampleData) -> None:
+    def assign_weights(self, sample_data_list: List[SampleData]) -> None:
+        raise NotImplementedError(f"Function `assign_weights` is not defined at `{self.__class__.__name__}`")
+
+    def save(self, sample_data: SampleData, index: int) -> None:
         raise NotImplementedError(f"Function `save` is not defined at `{self.__class__.__name__}`")
 
     def collect_subjects(self, sample_data_list: List[SampleData]) -> None:
@@ -57,7 +61,7 @@ class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
     def is_need_weight(self) -> bool:
         return False
 
-    def save(self, sample_data: SampleData) -> None:
+    def save(self, sample_data: SampleData, index: int) -> None:
         class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
 
         class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
@@ -75,7 +79,24 @@ class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
 
         st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
+class Subset:
+    subject: str
+    weight: float
+    image_count: int
+    repeats: int
+
+def get_list_gcd(numbers: List[int]) -> int:
+    result = numbers[0]
+
+    for num in numbers[1:]:
+        result = gcd(result, num)
+
+    return result
+
 class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
+    subsets: List[Subset] = []
+    subset_to_sample_data_ids: Dict[str, Subset] = {}
+
     @property
     def is_need_caption(self) -> bool:
         return True
@@ -83,6 +104,59 @@ class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
     @property
     def is_need_weight(self) -> bool:
         return True
+
+    def assign_weights(self, sample_data_list: List[SampleData]) -> None:
+        for sample_data in sample_data_list:
+            subset = next((
+                    subset for subset in self.subsets
+                    if subset.weight == sample_data.weight and
+                       subset.subject == sample_data.subject
+                ),
+                None,
+            )
+
+            if subset is not None:
+                subset.image_count +=1
+            else:
+                subset = Subset()
+
+                subset.subject = cast(str, sample_data.subject)
+                subset.weight = sample_data.weight
+                subset.image_count = 1
+
+                self.subsets.append(subset)
+
+            self.subset_to_sample_data_ids[sample_data.id] = subset
+
+        for subset in self.subsets:
+            subsets_for_subject = [subset_other for subset_other in self.subsets if subset_other.subject == subset.subject]
+            image_count_max = max(subsets_for_subject, key=lambda subset: subset.image_count).image_count
+
+            for subset_for_subject in subsets_for_subject:
+                subset_for_subject.repeats = floor((image_count_max * subset.weight) / subset.image_count)
+
+            repeats_gcd = get_list_gcd([subset_for_subject.repeats for subset_for_subject in subsets_for_subject])
+
+            for subset_for_subject in subsets_for_subject:
+                subset_for_subject.repeats = floor(subset_for_subject.repeats / float(repeats_gcd))
+
+    def save(self, sample_data: SampleData, index: int) -> None:
+            subset = self.subset_to_sample_data_ids[sample_data.id]
+
+            subset_dir = f"{DATASET_ROOT_DIR}/images/{subset.repeats}_{subset.subject}"
+
+            makedirs(
+                name=subset_dir,
+                exist_ok=True,
+            )
+
+            mel_spectrogram_image_path = f"{subset_dir}/{subset.subject}-{index}.png"
+
+            mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
+
+            mel_spectrogram_image.save(mel_spectrogram_image_path)
+
+            st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
 class DatasetFolderSaverFactory:
     @classmethod
@@ -196,9 +270,10 @@ else:
         type="primary",
     ):
         dataset_folder_saver.prepare_parent_folder()
+        dataset_folder_saver.assign_weights(sample_data_list)
 
         with st.container(border=True):
             st.subheader("Saved Images Logs")
 
-            for sample_data in sample_data_list:
-                dataset_folder_saver.save(sample_data)
+            for index, sample_data in enumerate(sample_data_list):
+                dataset_folder_saver.save(sample_data, index)
