@@ -5,7 +5,7 @@ from audio_sample_generator.constants import DATASET_ROOT_DIR
 
 import streamlit as st
 
-from typing import cast
+from typing import List, cast
 from os import makedirs
 from shutil import rmtree
 
@@ -18,6 +18,8 @@ class DatasetFolderSaver:
         KEY_KOHYA_SS,
     ]
 
+    subjects_collected = []
+
     @property
     def is_need_caption(self) -> bool:
         raise NotImplementedError(f"Property `is_need_caption` is not defined at `{self.__class__.__name__}`")
@@ -26,8 +28,19 @@ class DatasetFolderSaver:
     def is_need_weight(self) -> bool:
         raise NotImplementedError(f"Property `is_need_weight` is not defined at `{self.__class__.__name__}`")
 
+    @property
+    def subjects(self) -> List[str]:
+        return self.subjects_collected
+
     def save(self, sample_data: SampleData) -> None:
         raise NotImplementedError(f"Function `save` is not defined at `{self.__class__.__name__}`")
+
+    def collect_subjects(self, sample_data_list: List[SampleData]) -> None:
+        for sample_data in sample_data_list:
+            subject = sample_data.subject
+
+            if subject not in self.subjects_collected and subject is not None:
+                self.subjects_collected.append(subject)
 
 class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
     @property
@@ -108,6 +121,8 @@ else:
     with st.container(border=True):
         st.subheader("Loaded Audio")
 
+        dataset_folder_saver.collect_subjects(sample_data_list)
+
         for sample_data in sample_data_list:
             with st.container(border=True):
                 is_enabled = st.checkbox(
@@ -133,12 +148,21 @@ else:
                     use_column_width="always",
                 )
 
-                subject = st.text_input(
+                selected_subject = st.selectbox(
                     label="Subject",
-                    placeholder="DrumKit",
-                    value=None,
-                    key=f"subject_{sample_data.id}"
+                    options=[ "Custom", *dataset_folder_saver.subjects ],
+                    index=0,
+                    key=f"subject_{sample_data.id}",
                 )
+
+                if selected_subject in dataset_folder_saver.subjects:
+                    subject = selected_subject
+                else:
+                    subject = st.text_input(
+                        label="Custom Subject",
+                        value="DrumKit",
+                        key=f"subject_custom_{sample_data.id}"
+                    )
 
                 sample_data.subject = subject
 
