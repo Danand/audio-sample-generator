@@ -15,7 +15,7 @@
 - [x] Add audio preview for input spectrograms.
 - [x] Add batch converter for uploaded spectrograms.
 - [ ] Add choice of folder layout for dataset.
-  - [ ] Add hiding unnecessary components for certain folder layout.
+  - [x] Add hiding unnecessary components for certain folder layout.
   - [ ] Add autocompletion for `subject`
   - [ ] Add assigning weights on groups of `subject`
 - [ ] Refactor sample data.

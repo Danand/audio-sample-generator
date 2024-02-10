@@ -18,10 +18,26 @@ class DatasetFolderSaver:
         KEY_KOHYA_SS,
     ]
 
+    @property
+    def is_need_caption(self) -> bool:
+        raise NotImplementedError(f"Property `is_need_caption` is not defined at `{self.__class__.__name__}`")
+
+    @property
+    def is_need_weight(self) -> bool:
+        raise NotImplementedError(f"Property `is_need_weight` is not defined at `{self.__class__.__name__}`")
+
     def save(self, sample_data: SampleData) -> None:
         raise NotImplementedError(f"Function `save` is not defined at `{self.__class__.__name__}`")
 
 class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
+    @property
+    def is_need_caption(self)-> bool:
+        return False
+
+    @property
+    def is_need_weight(self) -> bool:
+        return False
+
     def save(self, sample_data: SampleData) -> None:
         rmtree(
             path=DATASET_ROOT_DIR,
@@ -46,7 +62,13 @@ class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
         st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
 class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
-    pass
+    @property
+    def is_need_caption(self) -> bool:
+        return True
+
+    @property
+    def is_need_weight(self) -> bool:
+        return True
 
 class DatasetFolderSaverFactory:
     @classmethod
@@ -120,26 +142,28 @@ else:
 
                 sample_data.subject = subject
 
-                caption = st.text_area(
-                    label="Caption",
-                    placeholder="kick",
-                    value=None,
-                    key=f"caption_{sample_data.id}"
-                )
-
-                sample_data.caption = caption
-
-                weight = cast(
-                    float,
-                    st.number_input(
-                        label="Weight",
-                        min_value=0.01,
-                        value=1.0,
-                        key=f"weight_{sample_data.id}"
+                if dataset_folder_saver.is_need_caption:
+                    caption = st.text_area(
+                        label="Caption",
+                        placeholder="kick",
+                        value=None,
+                        key=f"caption_{sample_data.id}"
                     )
-                )
 
-                sample_data.weight = weight
+                    sample_data.caption = caption
+
+                if dataset_folder_saver.is_need_weight:
+                    weight = cast(
+                        float,
+                        st.number_input(
+                            label="Weight",
+                            min_value=0.01,
+                            value=1.0,
+                            key=f"weight_{sample_data.id}"
+                        )
+                    )
+
+                    sample_data.weight = weight
 
     if st.button(
         label="Save",
