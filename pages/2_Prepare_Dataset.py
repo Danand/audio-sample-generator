@@ -42,6 +42,12 @@ class DatasetFolderSaver:
             if subject not in self.subjects_collected and subject is not None:
                 self.subjects_collected.append(subject)
 
+    def prepare_parent_folder(self) -> None:
+        rmtree(
+            path=DATASET_ROOT_DIR,
+            ignore_errors=True,
+        )
+
 class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
     @property
     def is_need_caption(self)-> bool:
@@ -52,11 +58,6 @@ class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
         return False
 
     def save(self, sample_data: SampleData) -> None:
-        rmtree(
-            path=DATASET_ROOT_DIR,
-            ignore_errors=True,
-        )
-
         class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
 
         class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
@@ -194,6 +195,8 @@ else:
         use_container_width=True,
         type="primary",
     ):
+        dataset_folder_saver.prepare_parent_folder()
+
         with st.container(border=True):
             st.subheader("Saved Images Logs")
 
