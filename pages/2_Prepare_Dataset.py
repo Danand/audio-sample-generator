@@ -61,6 +61,9 @@ class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
     def is_need_weight(self) -> bool:
         return False
 
+    def assign_weights(self, sample_data_list: List[SampleData]) -> None:
+        pass
+
     def save(self, sample_data: SampleData, index: int) -> None:
         class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
 
