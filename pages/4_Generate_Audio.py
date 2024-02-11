@@ -56,6 +56,15 @@ else:
             ),
         )
 
+        steps = cast(
+            int,
+            st.number_input(
+                label="Steps",
+                min_value=1,
+                value=20,
+            ),
+        )
+
         generate_amount = cast(
             int,
             st.number_input(
@@ -88,20 +97,31 @@ else:
 
             generator_model.eval()
 
-            # TODO: Generate non-noisy image.
+            placeholder_progress = st.empty()
+            placeholder_preview = st.empty()
 
             for i in range(generate_amount):
                 with torch.no_grad():
                     data_latent = torch.randn(model_data.input_size).to(device)
-                    data_generated: torch.Tensor = generator_model(data_latent)
+                    data_generated = data_latent
 
-                    image = convert_generated_data_with_model_data_to_image(data_generated, model_data).convert("RGB")
+                    for j in range(steps):
+                        data_generated: torch.Tensor = generator_model(data_generated)
 
-                    st.image(
-                        image=image.convert("RGB"),
-                        output_format="PNG",
-                        use_column_width="always",
-                    )
+                        image = convert_generated_data_with_model_data_to_image(data_generated, model_data).convert("RGB")
 
-                    # TODO: Convert to audio.
+                        placeholder_preview.image(
+                            image=image.convert("RGB"),
+                            output_format="PNG",
+                            use_column_width="always",
+                        )
+
+                        step_count = j + 1
+
+                        placeholder_progress.progress(
+                            value=step_count / float(steps),
+                            text=f"Steps: {step_count}/{steps}"
+                        )
+
+                        # TODO: Convert to audio.
 
