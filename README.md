@@ -19,5 +19,5 @@
   - [x] Add autocompletion for `subject`
   - [x] Add assigning weights on groups of `subject`
 - [ ] Refactor sample data.
-- [ ] Add usage of neural network for generating random mel spectrograms.
-- [ ] Convert generated mel spectrogram back to audio.
+- [x] Add usage of neural network for generating random mel spectrograms.
+- [x] Convert generated mel spectrogram back to audio.
