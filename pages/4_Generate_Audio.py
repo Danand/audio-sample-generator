@@ -87,9 +87,6 @@ else:
     ):
         device = torch.device(device_name)
 
-        random.seed(seed)
-        np.random.seed(seed)
-        torch.manual_seed(seed)
         torch.use_deterministic_algorithms(True)
 
         generator_model = SpectrogramsGeneratorModel(
@@ -139,6 +136,12 @@ else:
 
             for i in range(generate_amount):
                 with torch.no_grad():
+                    seed_item = seed + i
+
+                    random.seed(seed_item)
+                    np.random.seed(seed_item)
+                    torch.manual_seed(seed_item)
+
                     data_latent = torch.randn(model_data.input_size).to(device)
                     data_generated = data_latent
 
