@@ -12,16 +12,12 @@ class SpectrogramsGeneratorModel(nn.Module):
     ):
         super(SpectrogramsGeneratorModel, self).__init__()
 
-        self.layer1 = nn.Linear(input_size, hidden_size, device=device)
-        self.relu = nn.ReLU()
-        self.layer2 = nn.Linear(hidden_size, output_size, device=device)
-        self.tanh = nn.Tanh()
+        self.layers = nn.Sequential(
+            nn.Linear(input_size, hidden_size, device=device),
+            nn.ReLU(),
+            nn.Linear(hidden_size, output_size, device=device),
+            nn.Tanh(),
+        )
 
-    def forward(self, x):
-        x = self.layer1(x)
-        x = self.relu(x)
-        x = self.layer2(x)
-        x = self.tanh(x)
-
-        return x
-
+    def forward(self, input):
+        return self.layers(input)
