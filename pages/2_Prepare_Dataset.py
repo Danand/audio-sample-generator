@@ -93,6 +93,17 @@ def get_list_gcd(numbers: List[int]) -> int:
 
     return result
 
+def assign_repeats(subsets: List[Subset]) -> None:
+    image_count_max = max(subsets, key=lambda subset: subset.image_count).image_count
+
+    for subset in subsets:
+        subset.repeats = floor((image_count_max * subset.weight) / subset.image_count)
+
+    repeats_gcd = get_list_gcd([subset_for_subject.repeats for subset_for_subject in subsets])
+
+    for subset in subsets:
+        subset.repeats = floor(subset.repeats / float(repeats_gcd))
+
 class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
     subsets: List[Subset] = []
     subset_to_sample_data_ids: Dict[str, Subset] = {}
@@ -128,17 +139,11 @@ class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
 
             self.subset_to_sample_data_ids[sample_data.id] = subset
 
-        for subset in self.subsets:
-            subsets_for_subject = [subset_other for subset_other in self.subsets if subset_other.subject == subset.subject]
-            image_count_max = max(subsets_for_subject, key=lambda subset: subset.image_count).image_count
+        subjects_uniq = set([subset.subject for subset in self.subsets])
 
-            for subset_for_subject in subsets_for_subject:
-                subset_for_subject.repeats = floor((image_count_max * subset.weight) / subset.image_count)
-
-            repeats_gcd = get_list_gcd([subset_for_subject.repeats for subset_for_subject in subsets_for_subject])
-
-            for subset_for_subject in subsets_for_subject:
-                subset_for_subject.repeats = floor(subset_for_subject.repeats / float(repeats_gcd))
+        for subject in subjects_uniq:
+            subsets_for_subject = [subset for subset in self.subsets if subset.subject == subject]
+            assign_repeats(subsets_for_subject)
 
     def save(self, sample_data: SampleData, index: int) -> None:
             subset = self.subset_to_sample_data_ids[sample_data.id]
