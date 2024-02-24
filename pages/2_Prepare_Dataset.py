@@ -158,7 +158,9 @@ class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
                 exist_ok=True,
             )
 
-            mel_spectrogram_image_path = f"{subset_dir}/{subset.subject}-{index}.png"
+            image_name="image"
+
+            mel_spectrogram_image_path = f"{subset_dir}/{image_name}-{index}.png"
 
             mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
 
@@ -166,7 +168,7 @@ class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
 
             st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
-            caption_path = f"{subset_dir}/image-{index}.txt"
+            caption_path = f"{subset_dir}/{image_name}-{index}.txt"
 
             if sample_data.caption is not None:
                 with open(caption_path, "w") as file_caption:
@@ -239,21 +241,11 @@ else:
                     use_column_width="always",
                 )
 
-                selected_subject = st.selectbox(
+                subject = st.text_input(
                     label="Subject",
-                    options=[ "Custom", *dataset_folder_saver.subjects ],
-                    index=0,
-                    key=f"subject_{sample_data.id}",
+                    value="DrumKit",
+                    key=f"subject_{sample_data.id}"
                 )
-
-                if selected_subject in dataset_folder_saver.subjects:
-                    subject = selected_subject
-                else:
-                    subject = st.text_input(
-                        label="Custom Subject",
-                        value="DrumKit",
-                        key=f"subject_custom_{sample_data.id}"
-                    )
 
                 sample_data.subject = subject
 
