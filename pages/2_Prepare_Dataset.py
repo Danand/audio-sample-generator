@@ -166,6 +166,14 @@ class DatasetFolderSaverKohyaSS(DatasetFolderSaver):
 
             st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
+            caption_path = f"{subset_dir}/image-{index}.txt"
+
+            if sample_data.caption is not None:
+                with open(caption_path, "w") as file_caption:
+                    file_caption.write(sample_data.caption)
+
+                st.text(f"Saved caption for training: '{caption_path}'")
+
 class DatasetFolderSaverFactory:
     @classmethod
     def create(cls, key: str) -> DatasetFolderSaver:
