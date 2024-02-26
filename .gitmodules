@@ -1,0 +1,3 @@
+[submodule "sd_scripts"]
+	path = sd_scripts
+	url = git@github.com:Danand/sd-scripts.git
