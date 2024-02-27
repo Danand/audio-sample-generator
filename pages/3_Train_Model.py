@@ -1,6 +1,6 @@
 from audio_sample_generator import constants
-from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image, convert_generated_data_to_image
-from audio_sample_generator.utils.streamlit_utils import sample_data_list
+from audio_sample_generator.utils.image_utils import convert_generated_data_to_image
+from audio_sample_generator.utils.streamlit_utils import sample_data_list, common_data
 from audio_sample_generator.utils.torch_utils import get_available_devices
 from audio_sample_generator.nn.spectrograms_generator_model import SpectrogramsGeneratorModel
 from audio_sample_generator.data.model_data import ModelData
@@ -42,13 +42,8 @@ else:
     with st.container(border=True):
         st.subheader("Train Spectrograms Model")
 
-        # TODO: Refactor by introducing common storage
-        # TODO: for width and height of all images.
-
-        mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data_list[0].mel_spectrogram)
-
-        output_height = mel_spectrogram_image.height
-        output_width = mel_spectrogram_image.width
+        output_height = common_data.height
+        output_width = common_data.width
         input_size = output_width * output_height
 
         devices = get_available_devices()

@@ -18,6 +18,6 @@
   - [x] Add hiding unnecessary components for certain folder layout.
   - [x] Add autocompletion for `subject`
   - [x] Add assigning weights on groups of `subject`
-- [ ] Refactor sample data.
+- [x] Refactor sample data.
 - [x] Add usage of neural network for generating random mel spectrograms.
 - [x] Convert generated mel spectrogram back to audio.

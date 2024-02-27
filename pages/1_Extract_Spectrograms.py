@@ -4,7 +4,7 @@ from audio_sample_generator.utils.audio_utils import load, \
                                                      pad_duration
 
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
-from audio_sample_generator.utils.streamlit_utils import sample_data_list
+from audio_sample_generator.utils.streamlit_utils import sample_data_list, common_data
 from audio_sample_generator.utils.torch_utils import get_window_fn_dict
 
 from audio_sample_generator.data.sample_data import SampleData
@@ -375,6 +375,9 @@ if input_audio_files is not None \
                     )
 
                     mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
+
+                    common_data.width = max(common_data.width, mel_spectrogram_image.width)
+                    common_data.height = max(common_data.height, mel_spectrogram_image.width)
 
                     st.image(
                         image=mel_spectrogram_image.convert("RGB"),

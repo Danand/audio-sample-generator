@@ -1,4 +1,5 @@
 from audio_sample_generator.data.sample_data import SampleData
+from audio_sample_generator.data.common_data import CommonData
 from audio_sample_generator.utils.torch_utils import get_window_fn_dict
 
 import streamlit as st
@@ -11,6 +12,13 @@ if st.session_state.get(SESSION_STATE_KEY_SAMPLE_DATA_LIST) is None:
     st.session_state[SESSION_STATE_KEY_SAMPLE_DATA_LIST] = []
 
 sample_data_list: List[SampleData] = st.session_state[SESSION_STATE_KEY_SAMPLE_DATA_LIST]
+
+SESSION_STATE_KEY_COMMON_DATA = "common_data"
+
+if st.session_state.get(SESSION_STATE_KEY_COMMON_DATA) is None:
+    st.session_state[SESSION_STATE_KEY_COMMON_DATA] = CommonData()
+
+common_data: CommonData = st.session_state[SESSION_STATE_KEY_COMMON_DATA]
 
 class SpectrogramToAudioSettings:
     sample_rate: int
