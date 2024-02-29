@@ -11,11 +11,9 @@ from shutil import rmtree
 from math import floor, gcd
 
 class DatasetFolderSaver:
-    KEY_PLAIN_PYTORCH = "Plain PyTorch"
     KEY_KOHYA_SS = "kohya_ss"
 
     OPTIONS = [
-        KEY_PLAIN_PYTORCH,
         KEY_KOHYA_SS,
     ]
 
@@ -51,36 +49,6 @@ class DatasetFolderSaver:
             path=DATASET_ROOT_DIR,
             ignore_errors=True,
         )
-
-class DatasetFolderSaverPlainPyTorch(DatasetFolderSaver):
-    @property
-    def is_need_caption(self)-> bool:
-        return False
-
-    @property
-    def is_need_weight(self) -> bool:
-        return False
-
-    def assign_weights(self, sample_data_list: List[SampleData]) -> None:
-        pass
-
-    def save(self, sample_data: SampleData, index: int) -> None:
-        class_name = "spectrograms" if sample_data.subject is None else sample_data.subject
-
-        class_dir = f"{DATASET_ROOT_DIR}/{class_name}"
-
-        makedirs(
-            name=class_dir,
-            exist_ok=True,
-        )
-
-        mel_spectrogram_image_path = f"{class_dir}/{sample_data.id}.png"
-
-        mel_spectrogram_image = convert_mel_spectrogram_to_image(sample_data.mel_spectrogram)
-
-        mel_spectrogram_image.save(mel_spectrogram_image_path)
-
-        st.text(f"Saved image for training: '{mel_spectrogram_image_path}'")
 
 class Subset:
     subject: str
@@ -180,7 +148,6 @@ class DatasetFolderSaverFactory:
     @classmethod
     def create(cls, key: str) -> DatasetFolderSaver:
         return {
-            DatasetFolderSaver.KEY_PLAIN_PYTORCH: lambda: DatasetFolderSaverPlainPyTorch(),
             DatasetFolderSaver.KEY_KOHYA_SS: lambda: DatasetFolderSaverKohyaSS(),
         }[key]()
 

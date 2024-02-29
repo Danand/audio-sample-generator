@@ -22,4 +22,4 @@
 - [x] Add usage of neural network for generating random mel spectrograms.
 - [x] Convert generated mel spectrogram back to audio.
 - [x] Add generation of spectrograms with Stable Diffusion.
-- [ ] Clean up useless attempts to utilize self-written GAN
+- [x] Clean up useless attempts to utilize self-written GAN

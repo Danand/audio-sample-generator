@@ -24,10 +24,14 @@
     "slaney",
     "stft",
     "streamlit",
+    "timestep",
     "torchaudio",
     "torchvision",
     "tqdm",
     "unet",
     "unsqueeze"
-  ]
+  ],
+  "files.exclude": {
+    "sd_scripts": true
+  }
 }
