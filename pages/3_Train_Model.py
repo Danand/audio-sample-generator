@@ -2,7 +2,7 @@ from audio_sample_generator import constants
 from audio_sample_generator.utils.image_utils import convert_generated_data_to_image
 from audio_sample_generator.utils.streamlit_utils import sample_data_list, common_data
 from audio_sample_generator.utils.torch_utils import get_available_devices
-from audio_sample_generator.nn.spectrograms_generator_model import SpectrogramsGeneratorModel
+from audio_sample_generator.nn.spectrograms_generator_model import SpectrogramsGeneratorModel, SpectrogramsDiscriminatorModel
 from audio_sample_generator.data.model_data import ModelData
 from audio_sample_generator.constants import DATASET_ROOT_DIR
 
@@ -145,17 +145,28 @@ else:
             torch.manual_seed(seed)
             torch.use_deterministic_algorithms(True)
 
-            generator_model = SpectrogramsGeneratorModel(
+            model_generator = SpectrogramsGeneratorModel(
                 input_size=input_size,
                 hidden_size=hidden_size,
                 output_size=output_size,
                 device=device,
             ).to(device)
 
+            model_discriminator = SpectrogramsDiscriminatorModel(
+                input_size=input_size,
+                hidden_size=hidden_size,
+                device=device,
+            ).to(device)
+
             criterion = nn.MSELoss().to(device)
 
-            optimizer = optim.AdamW(
-                params=generator_model.parameters(),
+            optimizer_generator = optim.AdamW(
+                params=model_generator.parameters(),
+                lr=learning_rate,
+            )
+
+            optimizer_discriminator = optim.AdamW(
+                params=model_discriminator.parameters(),
                 lr=learning_rate,
             )
 
@@ -196,12 +207,31 @@ else:
                 for batch_idx, (data, _) in enumerate(train_loader):
                     data_flatten = data.view(-1).to(device)
 
-                    outputs = generator_model(data_flatten)
-                    loss = criterion(outputs, data_flatten)
+                    latent_noise_train = torch.randn_like(data_flatten)
 
-                    optimizer.zero_grad()
-                    loss.backward()
-                    optimizer.step()
+                    outputs_fake = model_generator(latent_noise_train)
+
+                    outputs_discriminator_real = model_discriminator(data_flatten)
+                    loss_discriminator_real = criterion(outputs_discriminator_real, torch.ones_like(outputs_discriminator_real))
+
+                    outputs_discriminator_fake = model_discriminator(outputs_fake)
+                    loss_discriminator_fake = criterion(outputs_discriminator_fake, torch.zeros_like(outputs_discriminator_fake))
+
+                    loss_discriminator_mean: torch.Tensor = (loss_discriminator_real + loss_discriminator_fake) / 2
+
+                    model_discriminator.zero_grad()
+
+                    loss_discriminator_mean.backward(retain_graph=True)
+
+                    optimizer_discriminator.step()
+
+                    outputs_discriminator = model_discriminator(outputs_fake)
+                    loss_generator = criterion(outputs_discriminator, torch.ones_like(outputs_discriminator))
+                    model_generator.zero_grad()
+
+                    optimizer_generator.zero_grad()
+                    loss_generator.backward()
+                    optimizer_generator.step()
 
                     step_count += 1
 
@@ -211,22 +241,27 @@ else:
 
                     placeholder_epoch.text(f"Epoch: {epoch + 1} / {num_epochs}")
                     placeholder_step.text(f"Step: {step_count}/{(len(train_loader) * num_epochs)}")
-                    placeholder_loss.text(f"Loss: {loss.item():.4f}")
+                    placeholder_loss.text(f"Loss: {loss_generator.item():.4f}")
 
-                    if is_enabled_preview:
-                        image_preview = convert_generated_data_to_image(
-                            data_generated=outputs,
-                            normalization_std=normalization_std,
-                            normalization_mean=normalization_mean,
-                            output_height=output_height,
-                            output_width=output_width,
-                        )
+                    latent_noise_generation = torch.randn_like(data_flatten)
 
-                        placeholder_preview.image(
-                            image=image_preview.convert("RGB"),
-                            output_format="PNG",
-                            use_column_width="always",
-                        )
+                    with torch.no_grad():
+                        outputs = model_generator(latent_noise_generation)
+
+                        if is_enabled_preview:
+                            image_preview = convert_generated_data_to_image(
+                                data_generated=outputs,
+                                normalization_std=normalization_std,
+                                normalization_mean=normalization_mean,
+                                output_height=output_height,
+                                output_width=output_width,
+                            )
+
+                            placeholder_preview.image(
+                                image=image_preview.convert("RGB"),
+                                output_format="PNG",
+                                use_column_width="always",
+                            )
 
             model_output_dir="./temp/models"
 
@@ -243,7 +278,7 @@ else:
             model_output_path=f"{model_output_dir}/spectrograms.pth"
 
             torch.save(
-                obj=generator_model.state_dict(),
+                obj=model_generator.state_dict(),
                 f=model_output_path,
             )
 
