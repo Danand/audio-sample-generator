@@ -27,6 +27,8 @@ def calc_steps(train_data_dir: str) -> int:
     for subset_dir in subset_dirs:
         subset_folder = basename(subset_dir)
         repeats = int(subset_folder.split("_")[0])
+
+        # TODO: Refactor passing multiple file extensions.
         image_paths = glob(f"{subset_dir}/*.png") + glob(f"{subset_dir}/*.jpg")
 
         steps_total += repeats * len(image_paths)
@@ -37,6 +39,7 @@ def calc_size_max(train_data_dir: str) -> Tuple[int, int]:
     width_max = 0
     height_max = 0
 
+    # TODO: Refactor passing multiple file extensions.
     image_paths = glob(f"{train_data_dir}/**/**/*.png") + glob(f"{train_data_dir}/**/**/*.jpg")
 
     for image_path in image_paths:
