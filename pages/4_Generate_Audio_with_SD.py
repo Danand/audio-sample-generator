@@ -1,4 +1,4 @@
-from audio_sample_generator.utils.streamlit_utils import get_spectrogram_to_audio_settings
+from audio_sample_generator.utils.streamlit_utils import get_spectrogram_to_audio_settings, common_data
 from audio_sample_generator.utils.torch_utils import get_available_devices
 
 import streamlit as st
@@ -42,7 +42,7 @@ with st.container(border=True):
 
     lora_path = st.text_input(
         label="LoRA Path",
-        value=f"{constants.DATASET_ROOT_DIR}/output/{constants.OUTPUT_MODEL_NAME}.safetensors",
+        value=f"{constants.DATASET_ROOT_DIR}/output/{common_data.output_model_name}.safetensors",
     )
 
     prompt = st.text_area(

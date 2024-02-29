@@ -3,6 +3,7 @@ import sys
 sys.path.append("sd_scripts")
 
 from audio_sample_generator import constants
+from audio_sample_generator.utils.streamlit_utils import common_data
 
 from sd_scripts_bridge.ui.factories.ui_wrapper_factory_streamlit import UIWrapperFactoryStreamlit
 
@@ -71,6 +72,8 @@ with st.container(border=True):
         label="Output Model Name",
         value=constants.OUTPUT_MODEL_NAME,
     )
+
+    common_data.output_model_name = constants.OUTPUT_MODEL_NAME
 
     seed = cast(
         int,
