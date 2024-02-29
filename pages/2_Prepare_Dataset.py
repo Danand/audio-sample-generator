@@ -154,7 +154,7 @@ class DatasetFolderSaverFactory:
 title = "Prepare Dataset"
 
 st.set_page_config(
-    page_icon=title,
+    page_title=title,
 )
 
 st.title(title)

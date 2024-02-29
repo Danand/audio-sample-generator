@@ -24,7 +24,7 @@ from math import ceil
 title = "Generate Audio with Stable Diffusion"
 
 st.set_page_config(
-    page_icon=title,
+    page_title=title,
 )
 
 st.title(title)

@@ -50,7 +50,7 @@ def calc_size_max(train_data_dir: str) -> Tuple[int, int]:
 title = "Train LoRA"
 
 st.set_page_config(
-    page_icon=title,
+    page_title=title,
 )
 
 st.title(title)
