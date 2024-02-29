@@ -21,5 +21,5 @@
 - [x] Refactor sample data.
 - [x] Add usage of neural network for generating random mel spectrograms.
 - [x] Convert generated mel spectrogram back to audio.
-- [ ] Add generation of spectrograms with Stable Diffusion.
+- [x] Add generation of spectrograms with Stable Diffusion.
 - [ ] Clean up useless attempts to utilize self-written GAN

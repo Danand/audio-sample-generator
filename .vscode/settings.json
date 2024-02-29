@@ -3,6 +3,7 @@
     "astype",
     "blackman",
     "denormalized",
+    "dtype",
     "fromarray",
     "gelsd",
     "gelss",
