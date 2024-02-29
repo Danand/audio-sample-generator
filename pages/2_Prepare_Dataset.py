@@ -160,7 +160,7 @@ st.set_page_config(
 st.title(title)
 
 if (len(sample_data_list) == 0):
-    st.markdown("No samples here yet. But you can add at **Extract Spectrograms**.")
+    st.markdown("No samples here yet. But you can add it at **Extract Spectrograms**.")
 else:
     with st.container(border=True):
         st.subheader("Common Settings")
