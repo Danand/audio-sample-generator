@@ -20,6 +20,7 @@ input_image_files = st.file_uploader(
     accept_multiple_files=True,
     type=[
         "png",
+        "jpg",
     ],
 )
 
