@@ -59,7 +59,7 @@ with st.container(border=True):
 
     base_model = st.text_input(
         label="Base Model",
-        value="runwayml/stable-diffusion-v1-5",
+        value=constants.DEFAULT_BASE_MODEL,
     )
 
     training_dir = st.text_input(

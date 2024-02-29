@@ -37,7 +37,7 @@ with st.container(border=True):
 
     base_model = st.text_input(
         label="Base Model",
-        value="runwayml/stable-diffusion-v1-5",
+        value=constants.DEFAULT_BASE_MODEL,
     )
 
     lora_path = st.text_input(
