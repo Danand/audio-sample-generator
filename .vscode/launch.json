@@ -13,7 +13,10 @@
       "args": [
         "run",
         "Getting_Started.py"
-      ]
+      ],
+      "env": {
+        "PYTORCH_MPS_HIGH_WATERMARK_RATIO": "0.0"
+      }
     }
   ]
 }
