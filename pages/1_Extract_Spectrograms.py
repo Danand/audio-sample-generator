@@ -66,7 +66,7 @@ if input_audio_files is not None \
             )
         )
 
-        default_target_duration = st.session_state.get("default_target_duration", 1.0)
+        default_target_duration = st.session_state.get("default_target_duration", 0.998)
 
         target_duration = cast(
             float,
@@ -79,9 +79,9 @@ if input_audio_files is not None \
             )
         )
 
-        default_n_mels = st.session_state.get("default_n_mels", 128)
-        default_hop_length = st.session_state.get("default_hop_length", 400)
-        default_custom_value_enabled_hop_length=st.session_state.get("default_custom_value_enabled_hop_length", False)
+        default_n_mels = st.session_state.get("default_n_mels", 512)
+        default_hop_length = st.session_state.get("default_hop_length", 43)
+        default_custom_value_enabled_hop_length=st.session_state.get("default_custom_value_enabled_hop_length", True)
 
         with st.container(border=True):
             target_width = cast(

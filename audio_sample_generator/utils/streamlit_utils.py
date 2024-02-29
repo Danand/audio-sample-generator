@@ -101,7 +101,7 @@ def get_spectrogram_to_audio_settings() -> SpectrogramToAudioSettings:
         st.number_input(
             label="FFT Length",
             min_value=0,
-            value=400,
+            value=4096,
         )
     )
 
@@ -137,7 +137,7 @@ def get_spectrogram_to_audio_settings() -> SpectrogramToAudioSettings:
         st.number_input(
             label="Hop Length",
             min_value=0,
-            value=400,
+            value=43,
         )
     )
 
@@ -146,7 +146,7 @@ def get_spectrogram_to_audio_settings() -> SpectrogramToAudioSettings:
         st.number_input(
             label="Mel filter banks number",
             min_value=0,
-            value=128,
+            value=512,
         )
     )
 
