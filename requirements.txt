@@ -9,3 +9,4 @@ transformers==4.38.1
 einops==0.7.0
 opencv-python==4.9.0.80
 voluptuous==0.14.2
+

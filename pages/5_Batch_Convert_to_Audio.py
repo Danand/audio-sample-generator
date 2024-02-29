@@ -85,3 +85,4 @@ if input_image_files is not None \
                             output_format="PNG",
                             use_column_width="always",
                         )
+
