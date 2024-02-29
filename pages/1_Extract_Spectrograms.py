@@ -1,7 +1,9 @@
-from audio_sample_generator.utils.audio_utils import load, \
-                                                     trim_silence, \
-                                                     trim_duration, \
-                                                     pad_duration
+from audio_sample_generator.utils.audio_utils import (
+    load,
+    trim_silence,
+    trim_duration,
+    pad_duration,
+)
 
 from audio_sample_generator.utils.image_utils import convert_mel_spectrogram_to_image
 from audio_sample_generator.utils.streamlit_utils import sample_data_list, common_data
