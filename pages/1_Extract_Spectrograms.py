@@ -300,6 +300,8 @@ if input_audio_files is not None \
         with st.container(border=True):
             st.subheader("Loaded Audio")
 
+            sample_data_list.clear()
+
             for input_audio_file in input_audio_files:
                 try:
                     waveform_orig, sample_rate = load(input_audio_file)
