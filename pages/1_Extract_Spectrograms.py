@@ -124,7 +124,7 @@ if input_audio_files is not None \
             st.number_input(
                 label="FFT Length",
                 min_value=0,
-                value=400,
+                value=4096,
             )
         )
 
