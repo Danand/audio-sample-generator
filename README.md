@@ -17,7 +17,7 @@ Steps:
 ## How to install
 
 ```bash
-git clone git@github.com:Danand/audio-sample-generator.git
+git clone --recurse-submodules git@github.com:Danand/audio-sample-generator.git
 cd audio-sample-generator
 chmod +x run.sh
 ```
