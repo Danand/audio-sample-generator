@@ -1,9 +1,17 @@
 import torch
 
+# HACK: Fix linting failure on `torchaudio.load()`
 from torchaudio._backend.utils import get_load_func
 
-# HACK: Fix linting failure on `torchaudio.load()`
-load = get_load_func()
+import os
+
+from typing import BinaryIO, Tuple, Union
+
+def load(
+    file: Union[BinaryIO, str, os.PathLike],
+) -> Tuple[torch.Tensor, int]:
+    load_func = get_load_func()
+    return load_func(file)
 
 def trim_silence(
     waveform: torch.Tensor,
