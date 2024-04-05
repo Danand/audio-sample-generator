@@ -1,17 +1,40 @@
 import torch
 
 # HACK: Fix linting failure on `torchaudio.load()`
-from torchaudio._backend.utils import get_load_func
+from torchaudio._backend.utils import get_load_func, get_available_backends
+
+import soundfile
 
 import os
 
 from typing import BinaryIO, Tuple, Union
 
-def load(
+def load_with_found_backend(
     file: Union[BinaryIO, str, os.PathLike],
 ) -> Tuple[torch.Tensor, int]:
     load_func = get_load_func()
     return load_func(file)
+
+def load_with_fallback_to_soundfile(
+    file: Union[BinaryIO, str, os.PathLike],
+) -> Tuple[torch.Tensor, int]:
+    waveform_ndarray, sample_rate = soundfile.read(
+        file=file,
+        dtype="float32",
+        always_2d=True,
+    )
+
+    waveform_tensor = torch.from_numpy(waveform_ndarray) \
+                           .permute(1, 0)
+
+    return waveform_tensor, sample_rate
+
+available_backends = get_available_backends()
+
+if len(available_backends) > 0:
+    load = load_with_found_backend
+else:
+    load = load_with_fallback_to_soundfile
 
 def trim_silence(
     waveform: torch.Tensor,

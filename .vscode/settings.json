@@ -23,6 +23,7 @@
     "safetensors",
     "selectbox",
     "slaney",
+    "soundfile",
     "stft",
     "streamlit",
     "timestep",
