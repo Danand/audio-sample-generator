@@ -4,6 +4,8 @@
 
 set -e
 
+git submodule update --init
+
 deactivate > /dev/null 2>&1 || true
 
 if [ ! -f ".venv" ]; then
